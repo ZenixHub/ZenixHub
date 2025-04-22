@@ -1,0 +1,1066 @@
+if game.PlaceId == 17800899459 then
+    local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))() 
+    local Window = Rayfield:CreateWindow({
+        Name = "Sword Clashers Simulator",
+        Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+        LoadingTitle = "Zenix Hub",
+        LoadingSubtitle = "by Zenix",
+        Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+     
+        DisableRayfieldPrompts = false,
+        DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+     
+        ConfigurationSaving = {
+           Enabled = true,
+           FolderName = nil, -- Create a custom folder for your hub/game
+           FileName = "Zenix Hub"
+        },
+     
+        Discord = {
+           Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+           Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+           RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+        },
+     
+        KeySystem = false, -- Set this to true to use our key system
+        KeySettings = {
+           Title = "Zenix Hub",
+           Subtitle = "Key System",
+           Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+           FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+           SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+           GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+           Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+        }
+     })
+
+     ---[General Functions]---
+     local player = game:GetService("Players")
+
+     ---[SocialMedia]---
+     local MediaTab = Window:CreateTab("Social Media", nil)
+     local DiscordSection = MediaTab:CreateSection("Discord")
+     local DiscordParagraph = MediaTab:CreateParagraph({Title = "Discord", Content = "https://discord.gg/ca2jMaZv"})
+
+     ---[Player]---
+     local PlayerTab = Window:CreateTab("Player", nil)
+     local PlayerSection = PlayerTab:CreateSection("Player")
+         ---[DailyQuests]---
+      local dailyquest = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("1").DailyQuests
+         local DailyQuest = PlayerTab:CreateButton({
+         Name = "Daily Quests",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(dailyquest.Position)
+         end,
+      })
+         ---[NoEnemyAttack]---
+      local default1 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Default").Attacks[1]
+      local default2 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Default").Walks[1]
+      local brute1 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Brute").Attacks[1]
+      local brute2 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Brute").Walks[1]
+      local boss1 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Boss").Attack1
+      local boss2 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Boss").Attack2
+      local boss3 = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Boss").Attack3
+      local bossR = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Boss").Run
+      local bossM = game:GetService("ReplicatedStorage"):WaitForChild("Assets"):WaitForChild("Animations"):WaitForChild("Enemies"):WaitForChild("Boss").Move
+      local NoEnemyAttack = PlayerTab:CreateButton({
+         Name = "No Enemy Attack",
+         Callback = function()
+            task.wait(0.1)
+            default1:Destroy()
+
+            task.wait(0.1)
+            default2:Destroy()
+
+            task.wait(0.1)
+            brute1:Destroy()
+
+            task.wait(0.1)
+            brute2:Destroy()
+
+            task.wait(0.1)
+            boss1:Destroy()
+
+            task.wait(0.1)
+            boss2:Destroy()
+
+            task.wait(0.1)
+            boss3:Destroy()
+
+            task.wait(0.1)
+            bossR:Destroy()
+
+            task.wait(0.1)
+            bossM:Destroy()
+         end,
+      })
+         ---[KillAura]---
+      local m1 = game:GetService("Workspace"):WaitForChild("Enemies")
+      local KillAura = PlayerTab:CreateToggle({
+         Name = "Kill Aura",
+         CurrentValue = false,
+         Flag = "Kill Aura",
+         Callback = function(Value)
+            if Value then
+               _G.KillAura = true
+               local Position = m1:WaitForChild("1").Root.Position
+               while _G.KillAura == true do
+                  task.wait(1e-10000)
+                  local args = {[1] = 1,[2] = Position}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("EnemyDied"):FireServer(unpack(args))
+                  task.wait(1e-10000)
+                  for i, kall in pairs(m1:GetChildren()) do
+                     task.wait(1e-10000)
+                     kall:Destroy()
+                  end
+               end
+            else
+               _G.KillAura = false
+            end
+         end,
+      })
+
+     ---[Auto Farm]---
+     local AutoFarmTab = Window:CreateTab("AutoFarm", nil)
+     local AutoFarmSection = AutoFarmTab:CreateSection("AutoFarm")
+         ---[AutoTrain]---
+      local AutoTrain = AutoFarmTab:CreateToggle({
+         Name = "Auto Train",
+         CurrentValue = false,
+         Flag = "Auto Train",
+         Callback = function(Value)
+            if Value then
+               _G.AutoTrain = true
+               while _G.AutoTrain == true do
+                  task.wait(0.1)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Hit"):FireServer()
+               end
+            else
+               _G.AutoTrain = false
+            end
+         end,
+      })
+         ---[AutoTarget]---
+      local AutoTarget = AutoFarmTab:CreateToggle({
+         Name = "Auto Target",
+         CurrentValue = false,
+         Flag = "Auto Target",
+         Callback = function(Value)
+            if Value then
+               _G.AutoTagret = true
+               while _G.AutoTarget == true do
+                  task.wait(0.1)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("RegisterTargetClick"):FireServer()
+               end
+            else
+               _G.AutoTarget = false
+            end
+         end,
+      })
+         ---[AutoClaimDaily]---
+      local AutoClaimDaily = AutoFarmTab:CreateToggle({
+         Name = "Auto Claim Daily",
+         CurrentValue = false,
+         Flag = "Auto Claim Daily",
+         Callback = function(Value)
+            if Value then
+               _G.AutoClaimDaily = true
+               while _G.AutoClaimDaily == true do
+                  task.wait(0.1)
+                  local args = {[1] = 1}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+              
+                  task.wait(0.1)
+                  local args = {[1] = 2}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 3}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 4}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 5}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 6}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 7}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 8}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 9}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 10}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 11}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 12}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 13}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 14}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 15}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 16}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 17}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 18}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 19}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 20}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 21}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 22}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 23}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 24}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 25}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 26}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 27}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 28}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 29}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+
+                  task.wait(0.1)
+                  local args = {[1] = 30}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("ClaimDailyReward"):FireServer(unpack(args))
+               end
+            else
+               _G.AutoClaimDaily = false
+            end
+         end,
+      })
+         ---[AutoCraftAll]---
+      local AutoCraftAll = AutoFarmTab:CreateToggle({
+         Name = "Auto Craft All",
+         CurrentValue = false,
+         Flag = "Auto Craft All",
+         Callback = function(Value)
+            if Value then
+               _G.AutoCraftAll = true
+               while _G.AutoCraftAll == true do
+                  task.wait(5)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("CraftAll"):FireServer()
+               end
+            else
+               _G.AutoCraftAll = false
+            end
+         end,
+      })
+         ---[AutoEquipBest]---
+      local AutoEquipBest = AutoFarmTab:CreateToggle({
+         Name = "Auto Equipt Best",
+         CurrentValue = false,
+         Flag = "Auto Equipt Best",
+         Callback = function(Value)
+            if Value then
+               _G.AutoEquipBest = true
+               while _G.AutoEquipBest == true do
+                  task.wait(5)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("EquipBest"):FireServer()
+               end
+            else
+               _G.AutoEquipBest = false
+            end
+         end,
+      })
+         ---[AutoUpgrade]---
+      local AutoUpgrade = AutoFarmTab:CreateToggle({
+         Name = "Auto Upgrade",
+         CurrentValue = false,
+         Flag = "Auto Upgrade",
+         Callback = function(Value)
+            if Value then
+               _G.AutoUpgrade = true
+               while _G.AutoUpgrade == true do
+                  task.wait(1)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyUpgrade"):FireServer()
+               end
+            else
+               _G.AutoUpgrade = false
+            end
+         end,
+      })
+
+         ---[AutoCollectPlushies]---
+      local AutoCollectPlushies = AutoFarmTab:CreateToggle({
+         Name = "Auto Collect Plushies",
+         CurrentValue = false,
+         Flag = "Auto Collect Plushies",
+         Callback = function(Value)
+            if Value then
+               _G.AutoCollectPlushies = true
+               while _G.AutoCollectPlushies == true do
+                  task.wait(0.1)
+                  local args = {[1] = "1"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "2"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "3"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "4"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "5"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "6"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "7"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "8"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "9"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "10"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "11"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "12"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "13"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "14"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "15"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "16"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "17"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "18"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "19"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+                  task.wait(0.1)
+                  local args = {[1] = "20"}
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("CollectPlushie"):FireServer(unpack(args))
+               end
+            else
+               _G.AutoCollectPlushies = false
+            end
+         end,
+      })
+         ---[AutoWheel]---
+      local AutoWheel = AutoFarmTab:CreateToggle({
+         Name = "Auto Wheel",
+         CurrentValue = false,
+         Flag = "Auto Wheel",
+         Callback = function(Value)
+            if Value then
+               _G.AutoWheel = true
+               while _G.AutoWheel == true do
+                  task.wait(0.1)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyUpgrade"):FireServer()
+               end
+            else
+               _G.AutoWheel = false
+            end
+         end,
+      })
+         ---[AutoUnlockDoor]---
+      local AutoUnlockDoor = AutoFarmTab:CreateToggle({
+         Name = "Auto Unlock Door",
+         CurrentValue = false,
+         Flag = "Auto Unlock Door",
+         Callback = function(Value)
+            if Value then
+               _G.AutoUnlockDoor = true
+               while _G.AutoUnlockDoor == true do
+                  task.wait(5)
+                  game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("UnlockNewWorld"):FireServer()
+               end
+            else
+               _G.AutoUnlockDoor = false
+            end
+         end,
+      })
+
+     ---[Hatch]---
+     local HatchTab = Window:CreateTab("Hatch", nil)
+     local EggHatchSection = HatchTab:CreateSection("Egg Hatch")
+     local EggHatch = HatchTab:CreateDropdown({
+      Name = "Egg Hatch",
+      Options = {"Select here","World1 Baby","World1 Normal","World2 Baby","World2 Normal","World3 Baby","World3 Normal","World4 Baby","World4 Normal","World5 Baby","World5 Normal","World6 Baby","World6 Normal","World7 Baby","World7 Normal","World8 Baby","World8 Normal","World9 Baby","World9 Normal","World10 Baby","World10 Normal","World11 Baby","World11 Normal","World12 Baby","World12 Normal","World13 Baby","World13 Normal","World14 Baby","World14 Normal","World15 Baby","World15 Normal","World16 Baby","World16 Normal","World17 Baby","World17 Normal"},
+      CurrentOption = nil,
+      MultipleOptions = false,
+      Flag = "Egg Hatch",
+      Callback = function(Options)
+         local selectedOption = Options[1]
+         _G.Hatch = true
+         if selectedOption == "Select here" then
+            task.wait(0.1)
+            _G.Hatch = false
+            print("Select here")
+         elseif selectedOption == "World1 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World1_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World1 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World1_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World2 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World2_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World2 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World2_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World3 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World3_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World3 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World3_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World4 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World4_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World4 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World4_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World5 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World5_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World5 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World5_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World6 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World6_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World6 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World6_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World7 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World7_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World7 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World7_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World8 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World8_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World8 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World8_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World9 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World9_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World9 Normal" then
+            while _G.Hatch == true do
+            task.wait(0.1)
+            local args = {[1] = "Multi",[2] = "World9_Normal"}
+            game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+         end
+         elseif selectedOption == "World10 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World10_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+         end
+         elseif selectedOption == "World10 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World10_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World11 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World11_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World11 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World11_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World12 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World12_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World12 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World12_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World13 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World13_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World13 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World13_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World14 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World14_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World14 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World14_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World15 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World15_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World15 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World15_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World16 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World16_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World16 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World16_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World17 Baby" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World17_Baby"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "World17 Normal" then
+            while _G.Hatch == true do
+               task.wait(0.1)
+               local args = {[1] = "Multi",[2] = "World17_Normal"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("Pet"):WaitForChild("BuyEgg"):InvokeServer(unpack(args))
+            end
+         end
+      end,
+   })
+   local AuraHatchSection = HatchTab:CreateSection("Aura")
+   local EggHatch = HatchTab:CreateDropdown({
+      Name = "Aura",
+      Options = {"Select here","One","Half","Max"},
+      CurrentOption = nil,
+      MultipleOptions = false,
+      Flag = "Aura",
+      Callback = function(Options)
+         local selectedOption = Options[1]
+         _G.Aura = true
+         if selectedOption == "Select here" then
+            task.wait(0.1)
+            _G.Aura = false
+            print("Select here")
+         elseif selectedOption == "One" then
+            while _G.Aura == true do
+               task.wait(0.1)
+               local args = {[1] = "One"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("OpenAuras"):InvokeServer(unpack(args))
+            end
+         elseif selectedOption == "Half" then
+               task.wait(1)
+               local args = {[1] = "Half"}
+               game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("OpenAuras"):InvokeServer(unpack(args))
+         elseif selectedOption == "Max" then
+            task.wait(1)
+            local args = {[1] = "Max"}
+            game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("OpenAuras"):InvokeServer(unpack(args))
+         end
+      end,
+   })
+
+
+     ---[Teleport]---
+     local TeleportTab = Window:CreateTab("Teleport", nil)
+     local TeleportSection = TeleportTab:CreateSection("Teleport")
+         ---[TeleportDropdown]---
+         local world1 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("1").Exit
+         local world2 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("2").Exit
+         local world3 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("3").Exit
+         local world4 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("4").Exit
+         local world5 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("5").Exit
+         local world6 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("6").Exit
+         local world7 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("7").Exit
+         local world8 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("8").Exit
+         local world9 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("9").Exit
+         local world10 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("10").Exit
+         local world11 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("11").Exit
+         local world12 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("12").Exit
+         local world13 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("13").Exit
+         local world14 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("14").Exit
+         local world15 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("15").Exit
+         local world16 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("16").Exit
+         local world17 = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("17").Exit
+         local CrystalCave = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("Crystal Cave").Spawn
+         local DarkKnightChampion = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("Dark Knight Champion").Spawn
+         local MoltenKnightChampion = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("Molten Knight Champion").Exit
+         local Teleport = TeleportTab:CreateDropdown({
+            Name = "Worlds",
+            Options = {"Select here","World 1","World 2","World 3","World 4","World 5","World 6","World 7","World 8","World 9","World 10","World 11","World 12","World 13","World 14","World 15","World 16","World 17","Crystal Cave","Dark Knight Champion","Molten Knight Champion"},
+            CurrentOption = nil,
+            MultipleOptions = false,
+            Flag = "Teleport",
+            Callback = function(Options)
+               local selectedOption = Options[1]
+         
+                  if selectedOption == "Select here" then
+                     task.wait(0.1)
+                     print("Select here")
+                  elseif selectedOption == "World 1" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world1.Position)
+                  elseif selectedOption == "World 2" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world2.Position)
+                  elseif selectedOption == "World 3" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world3.Position)
+                  elseif selectedOption == "World 4" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world4.Position)
+                  elseif selectedOption == "World 5" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world5.Position)
+                  elseif selectedOption == "World 6" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world6.Position)
+                  elseif selectedOption == "World 7" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world7.Position)
+                  elseif selectedOption == "World 8" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world8.Position)
+                  elseif selectedOption == "World 9" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world9.Position)
+                  elseif selectedOption == "World 10" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world10.Position)
+                  elseif selectedOption == "World 11" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world11.Position)
+                  elseif selectedOption == "World 12" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world12.Position)
+                  elseif selectedOption == "World 13" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world13.Position)
+                  elseif selectedOption == "World 14" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world14.Position)
+                  elseif selectedOption == "World 15" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world15.Position)
+                  elseif selectedOption == "World 16" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world16.Position)
+                  elseif selectedOption == "World 17" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(world17.Position)
+                  elseif selectedOption == "Crystal Cave" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(CrystalCave.Position)
+                  elseif selectedOption == "Dark Knight Champion" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(DarkKnightChampion.Position)
+                  elseif selectedOption == "Molten Knight Champion" then
+                     task.wait(0.1)
+                     player.LocalPlayer.Character:MoveTo(MoltenKnightChampion.Position)
+                  end
+            end,
+            })
+
+     ---[Machine]---
+     local MachineTab = Window:CreateTab("Machine", nil)
+     local MachineSection = MachineTab:CreateSection("Machine")
+         ---[Shiny Machine]---
+      local shiny = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("3").CraftShiny
+      local ShinyMachine = MachineTab:CreateButton({
+         Name = "Shiny Machine",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(shiny.Position)
+         end,
+      })
+         ---[Rainbow Machine]---
+      local rainbow = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("6").CraftRainbow
+      local RainbowMachine = MachineTab:CreateButton({
+         Name = "Rainbow Machine",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(rainbow.Position)
+         end,
+      })
+         ---[Magical Machine]---
+      local magical = game:GetService("Workspace"):WaitForChild("Worlds"):WaitForChild("Crystal Cave").EtherealMenu
+      local MagicalMachine = MachineTab:CreateButton({
+         Name = "Magical Machine",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(magical.Position)
+         end,
+      })
+         ---[Merchant]---
+      local Merchant = game:GetService("Workspace"):WaitForChild("Core"):WaitForChild("Boat"):WaitForChild("Button").Hitbox
+      local Merchant = MachineTab:CreateButton({
+         Name = "Merchant",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(Merchant.Position)
+         end,
+      })
+         ---[Ethereal Menu]---
+      local EtherealButton = game:GetService("Workspace"):WaitForChild("Core"):WaitForChild("Ethereal"):WaitForChild("EtherealButton").Hitbox
+      local EtherealButton = MachineTab:CreateButton({
+         Name = "Ethereal Merchant",
+         Callback = function()
+            task.wait(0.1)
+            player.LocalPlayer.Character:MoveTo(EtherealButton.Position)
+         end,
+      })
+
+     ---[Auto Buy]---
+      local AutoBuyTab = Window:CreateTab("Auto Buy", nil)
+      local EtherealSection = AutoBuyTab:CreateSection("Ethereal")
+         ---[Ethereal]---
+      local Ethereal = AutoBuyTab:CreateDropdown({
+         Name = "Ethereal",
+         Options = {"Select here","Ethereal Egg","Ethereal Arrow II","Ethereal Thruster","Ethereal Everblade","Ethereal Clover III","Ethereal Nightblade"},
+         CurrentOption = nil,
+         MultipleOptions = false,
+         Flag = "Ethereal",
+         Callback = function(Options)
+            for i, option in ipairs(Options) do
+               if option == "Ethereal Egg" then
+                  while option == "Ethereal Egg" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Egg",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Ethereal Arrow II" then
+                  while option == "Ethereal Arrow II" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Arrow II",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Ethereal Thruster" then
+                  while option == "Ethereal Thruster" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Thruster",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Ethereal Everblade" then
+                  while option == "Ethereal Everblade" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Everblade",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Ethereal Clover III" then
+                  while option == "Ethereal Clover III" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Clover III",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Ethereal Nightblade" then
+                  while option == "Ethereal Nightblade" do
+                     task.wait(0.1)
+                     local args = {[1] = "Ethereal Nightblade",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromEtherealMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Select here" then
+                  task.wait(0.1)
+                  print("Select here")
+               end
+            end
+         end,
+      })
+      local MerchantSection = AutoBuyTab:CreateSection("Merchant")
+            ---[Merchant]---
+      local Merchant = AutoBuyTab:CreateDropdown({
+         Name = "Merchant",
+         Options = {"Select here","Luckyblock","Crazy Robot","Robo Dog","Big Charm","Pixelated Sword","Genius Alien","Alien","Cyborg Alien","Fire Cleaver","Drumstick","Shovel","Frosty Greatsword","Swipe N' Wipe","Midnight Kitten","Sparkletime Unicorn","Mystical Owl","LightFragment(E)","Soda Stinger","Turbine Jetpack","Luminostorm","Great Darkblade","Diamond Kitsune"},
+         CurrentOption = nil,
+         MultipleOptions = true,
+         Flag = "Merchant",
+         Callback = function(Options)
+            for i, option in ipairs(Options) do
+               if option == "Luckyblock" then
+                  while option == "Luckyblock" do
+                     task.wait(0.1)
+                     local args = {[1] = "Luckyblock",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Crazy Robot" then
+                  while option == "Crazy Robot" do
+                     task.wait(0.1)
+                     local args = {[1] = "Crazy Robot",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Robo Dog" then
+                  while option == "Robo Dog" do 
+                     task.wait(0.1)
+                     local args = {[1] = "Robo Dog",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Big Charm" then
+                  while option == "Big Charm" do
+                     task.wait(0.1)
+                     local args = {[1] = "Big Charm",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Pixelated Sword" then
+                  while option == "Pixelated Sword" do
+                     task.wait(0.1)
+                     local args = {[1] = "Pixelated Sword",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Genius Alien" then
+                  while option == "Genius Alien" do
+                     task.wait(0.1)
+                     local args = {[1] = "Genius Alien",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Alien" then
+                  while option == "Alien" do
+                     task.wait(0.1)
+                     local args = {[1] = "Alien",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Cyborg Alien" then
+                  while option == "Cyborg Alien" do
+                     task.wait(0.1)
+                     local args = {[1] = "Cyborg Alien",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Fire Cleaver" then
+                  while option == "Fire Cleaver" do
+                     task.wait(0.1)
+                     local args = {[1] = "Fire Cleaver",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Drumstick" then
+                  while option == "Drumstick" do
+                     task.wait(0.1)
+                     local args = {[1] = "Drumstick",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Shovel" then
+                  while option == "Shovel" do
+                     task.wait(0.1)
+                     local args = {[1] = "Shovel",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Frosty Greatsword" then
+                  while option == "Frosty Greatsword" do
+                     task.wait(0.1)
+                     local args = {[1] = "Frosty Greatsword",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Swipe N' Wipe" then
+                  while option == "Swipe N' Wipe" do
+                     task.wait(0.1)
+                     local args = {[1] = "Swipe N' Wipe",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Midnight Kitten" then
+                  while option == "Midnight Kitten" do
+                     task.wait(0.1)
+                     local args = {[1] = "Midnight Kitten",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Sparkletime Unicorn" then
+                  while option == "Sparkletime Unicorn" do
+                     task.wait(0.1)
+                     local args = {[1] = "Sparkletime Unicorn",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Mystical Owl" then
+                  while option == "Mystical Owl" do
+                     task.wait(0.1)
+                     local args = {[1] = "Mystical Owl",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "LightFragment(E)" then
+                  while option == "LightFragment(E)" do
+                     task.wait(0.1)
+                     local args = {[1] = "LightFragment(E)",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Soda Stinger" then
+                  while option == "Soda Stinger" do
+                     task.wait(0.1)
+                     local args = {[1] = "Soda Stinger",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Turbine Jetpack" then
+                  while option == "Turbine Jetpack" do
+                     task.wait(0.1)
+                     local args = {[1] = "Turbine Jetpack",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Luminostorm" then
+                  while option == "Luminostorm" do
+                     task.wait(0.1)
+                     local args = {[1] = "Luminostorm",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Great Darkblade" then
+                  while option == "Great Darkblade" do
+                     task.wait(0.1)
+                     local args = {[1] = "Great Darkblade",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Diamond Kitsune" then
+                  while option == "Diamond Kitsune" do
+                     task.wait(0.1)
+                     local args = {[1] = "Diamond Kitsune",[2] = false}
+                     game:GetService("ReplicatedStorage"):WaitForChild("Communication"):WaitForChild("BuyFromMerchant"):FireServer(unpack(args))
+                  end
+               elseif option == "Select here" then
+                  task.wait(0.1)
+                  print("Select here")
+               end
+           end
+         end,
+      })
+end
